@@ -62,7 +62,14 @@ var Quiet = (function() {
         if (audioCtx === undefined) {
             audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             console.log(audioCtx.sampleRate);
+            audioCtx.resume()
+            // alert("here")
         }
+    };
+
+    function funcresume() {
+        // alert("at funcresume")
+        audioCtx.resume()
     };
 
     function fail(reason) {
@@ -96,9 +103,9 @@ var Quiet = (function() {
             return;
         }
         if (!prefix.endsWith("/")) {
-            prefix += "";
+            prefix += "/";
         }
-        var profilesPath =  "quiet-profiles.json";
+        var profilesPath = prefix + "quiet-profiles.json";
 
         var fetch = new Promise(function(resolve, reject) {
             var xhr = new XMLHttpRequest();
@@ -151,6 +158,7 @@ var Quiet = (function() {
      * addReadyCallback(function() { console.log("ready!"); });
      */
     function addReadyCallback(c, errback) {
+    
         if (isReady()) {
             c();
             return;
@@ -706,6 +714,7 @@ var Quiet = (function() {
         var opt = Module.ccall('quiet_decoder_profile_str', 'pointer', ['array', 'array'], [c_profiles, c_profile]);
 
         initAudioContext();
+        funcresume();
         // quiet does not create an audio input when it starts
         // getting microphone access requires a permission dialog so only ask for it if we need it
         if (gUM === undefined) {
@@ -880,6 +889,7 @@ var Quiet = (function() {
      * @returns {ArrayBuffer} buf - converted arraybuffer
      */
     function str2ab(s) {
+        funcresume()
         var s_utf8 = unescape(encodeURIComponent(s));
         var buf = new ArrayBuffer(s_utf8.length);
         var bufView = new Uint8Array(buf);
@@ -943,7 +953,9 @@ var Quiet = (function() {
         str2ab: str2ab,
         ab2str: ab2str,
         mergeab: mergeab,
+        funcresume: funcresume,
         disconnect: disconnect
+        
     };
 })();
 
